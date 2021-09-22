@@ -1,7 +1,9 @@
-Huawei CCE Setup
+Ansible Role Newrelic
 =========
 
-Role to setup a bastion to connect with a cce cluster
+Role to setup new relic integration
+
+See more: [Kubernetes integration: install and configure](https://docs.newrelic.com/docs/integrations/kubernetes-integration/installation/kubernetes-integration-install-configure/)
 
 
 
