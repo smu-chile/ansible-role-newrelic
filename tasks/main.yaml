@@ -1,0 +1,49 @@
+- name: "Verify that required string variables are defined"
+  assert:
+    that: 
+      - required_variable is defined
+      - required_variable | length > 0
+      - required_variable != None
+    fail_msg: "{{ required_variable }} needs to be set for the role to work"
+    success_msg: "Required variable {{ required_variable}} is defined"
+  loop_control:
+    loop_var: required_variable
+  with_items:
+    - "{{ NEWRELIC_LICENSE_KEY }}"
+    - "{{ CLUSTER_NAME }}"
+    - "{{ NEWRELIC_API_KEY }}"
+    - "{{ NEWRELIC_DEPLOY_KEY }}"
+  no_log: True
+
+## Traefik
+
+- name: Setup Newrelic 1
+  shell: kubectl apply -f https://raw.githubusercontent.com/pixie-labs/pixie/main/k8s/operator/crd/base/px.dev_viziers.yaml
+
+- name: Setup Newrelic 2
+  shell: kubectl apply -f https://raw.githubusercontent.com/pixie-labs/pixie/main/k8s/operator/helm/crds/olm_crd.yaml
+
+- name: Setup Newrelic 3
+  shell: helm repo add newrelic https://helm-charts.newrelic.com && helm repo update
+
+- name: Setup Newrelic 4
+  shell: echo "{{ lookup('template', 'namespace.yaml') }}" | kubectl apply -f -
+
+
+- name: Setup Newrelic 5
+  shell: > 
+    helm upgrade --install newrelic-bundle newrelic/nri-bundle 
+    --set global.licenseKey={{ NEWRELIC_LICENSE_KEY }} 
+    --set global.cluster={{ CLUSTER_NAME}} 
+    --namespace=newrelic 
+    --set newrelic-infrastructure.privileged=true 
+    --set ksm.enabled=true 
+    --set prometheus.enabled=true 
+    --set kubeEvents.enabled=true 
+    --set logging.enabled=true 
+    --set newrelic-pixie.enabled=true 
+    --set newrelic-pixie.apiKey={{ NEWRELIC_API_KEY }} 
+    --set pixie-chart.enabled=true 
+    --set pixie-chart.deployKey={{ NEWRELIC_DEPLOY_KEY }} 
+    --set pixie-chart.clusterName={{ CLUSTER_NAME}} 
+
