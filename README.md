@@ -36,10 +36,6 @@ Example Playbook
 
 ```
 
-License
--------
-
-BSD
 
 Author Information
 ------------------

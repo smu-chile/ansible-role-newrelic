@@ -15,7 +15,7 @@
     - "{{ NEWRELIC_DEPLOY_KEY }}"
   no_log: True
 
-## Traefik
+## Newrelic
 
 - name: Setup Newrelic 1
   shell: kubectl apply -f https://raw.githubusercontent.com/pixie-labs/pixie/main/k8s/operator/crd/base/px.dev_viziers.yaml
