@@ -18,32 +18,23 @@
 ## Newrelic
 
 - name: Setup Newrelic 1
-  shell: kubectl apply -f https://raw.githubusercontent.com/pixie-labs/pixie/main/k8s/operator/crd/base/px.dev_viziers.yaml
+  shell: helm repo add newrelic https://helm-charts.newrelic.com 
 
 - name: Setup Newrelic 2
-  shell: kubectl apply -f https://raw.githubusercontent.com/pixie-labs/pixie/main/k8s/operator/helm/crds/olm_crd.yaml
+  shell: helm repo update
 
 - name: Setup Newrelic 3
-  shell: helm repo add newrelic https://helm-charts.newrelic.com && helm repo update
-
-- name: Setup Newrelic 4
-  shell: echo "{{ lookup('template', 'namespace.yaml') }}" | kubectl apply -f -
-
+  shell: kubectl create namespace newrelic
 
 - name: Setup Newrelic 5
   shell: > 
-    helm upgrade --install newrelic-bundle newrelic/nri-bundle --version 4.4.3 
-    --set global.licenseKey={{ NEWRELIC_LICENSE_KEY }} 
-    --set global.cluster={{ CLUSTER_NAME}} 
-    --namespace=newrelic 
-    --set newrelic-infrastructure.privileged=true 
-    --set ksm.enabled=true 
-    --set prometheus.enabled=true 
-    --set kubeEvents.enabled=true 
+    helm upgrade --install newrelic-bundle newrelic/nri-bundle \
+    --set global.licenseKey={{ NEWRELIC_LICENSE_KEY }}  \
+    --set global.cluster={{ CLUSTER_NAME}}  \
+    --namespace=newrelic \
+    --set newrelic-infrastructure.privileged=true \
+    --set global.lowDataMode=true \
+    --set ksm.enabled=true \
+    --set kubeEvents.enabled=true \
     --set logging.enabled=true 
-    --set newrelic-pixie.enabled=true 
-    --set newrelic-pixie.apiKey={{ NEWRELIC_API_KEY }} 
-    --set pixie-chart.enabled=true 
-    --set pixie-chart.deployKey={{ NEWRELIC_DEPLOY_KEY }} 
-    --set pixie-chart.clusterName={{ CLUSTER_NAME}} 
 
